@@ -120,6 +120,7 @@ def get_functions(lib):
 			('is_utf8', ctypes.c_int),
 		)),
 		vterm_free=(None, (('vt', VTerm_p),)),
+		vterm_set_utf8=(None, (('vt', VTerm_p), ('is_utf8', ctypes.c_int))),
 	)
 
 

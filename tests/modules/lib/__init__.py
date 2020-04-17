@@ -42,7 +42,7 @@ def urllib_read(query_url):
 	if query_url.startswith('http://ipv'):
 		if query_url.startswith('http://ipv4.icanhazip.com'):
 			return '127.0.0.1'
-		elif query_url.startswith('http://ipv4.icanhazip.com'):
+		elif query_url.startswith('http://ipv6.icanhazip.com'):
 			return '2001:4801:7818:6:abc5:ba2c:ff10:275f'
 	elif query_url.startswith('http://geoip.nekudo.com/api/'):
 		return '{"city":"Meppen","country":{"name":"Germany", "code":"DE"},"location":{"accuracy_radius":100,"latitude":52.6833,"longitude":7.3167,"time_zone":"Europe\/Berlin"},"ip":"82.145.55.16"}'
@@ -161,3 +161,23 @@ def replace_env(key, new, environ=None, **kwargs):
 	r = kwargs.copy()
 	r['environ'] = environ or {}
 	return ItemReplace(r['environ'], key, new, r)
+
+
+class PowerlineSingleTest(object):
+	def __init__(self, suite, name):
+		self.suite = suite
+		self.name = name
+
+	def __enter__(self):
+		return self
+
+	def __exit__(self, exc_type, exc_value, traceback):
+		if exc_type is not None:
+			self.exception('Exception while running test: {0!r}'.format(
+				exc_value))
+
+	def fail(self, message, allow_failure=False):
+		return self.suite.fail(self.name, message, allow_failure)
+
+	def exception(self, message, allow_failure=False):
+		return self.suite.exception(self.name, message, allow_failure)

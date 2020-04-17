@@ -8,8 +8,9 @@ from time import sleep
 
 from powerline.lib.dict import updated
 
-from tests.modules.lib.terminal import (MutableDimensions, do_terminal_tests,
-                                        get_env)
+from tests.modules.lib.terminal import (ExpectProcess, MutableDimensions,
+                                        do_terminal_tests, get_env)
+from tests.modules import PowerlineTestSuite
 
 
 TEST_ROOT = os.path.abspath(os.environ['TEST_ROOT'])
@@ -120,24 +121,16 @@ def main(attempts=3):
 		},
 	)
 
-	ret = True
-
-	for additional_test_args in testss:
-		test_args = {
-			'cmd': vim_exe,
-			'dim': dim,
-			'args': args,
-			'env': env,
-			'cwd': TEST_ROOT,
-			'attempts': 1,
-		}
-		test_args.update(additional_test_args)
-		test_args['tests'][0].setdefault('prep_cb', lambda p: sleep(1.5))
-		for test in test_args['tests']:
-			test.setdefault('row', dim.rows - 2)
-		ret = ret and do_terminal_tests(**test_args)
-
-	return ret
+	with PowerlineTestSuite('vim') as suite:
+		return do_terminal_tests(
+			tests=tests,
+			cmd=vim_exe,
+			dim=dim,
+			args=args,
+			env=env,
+			cwd=TEST_ROOT,
+			suite=suite,
+		)
 
 
 if __name__ == '__main__':
